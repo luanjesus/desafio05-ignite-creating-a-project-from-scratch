@@ -1,8 +1,62 @@
 // TODO
 .container {
   padding: 2.5rem 0 5rem;
+
+  button {
+    background: transparent;
+    border: 0;
+    font-size: 1.125rem;
+    margin-top: 4.125rem;
+    color: var(--highlight);
+  }
 }
 
 .posts {
+  width: 100%;
+  margin-top: 4.051rem;
 
+  a {
+    display: block;
+    width: 100%;
+
+    h2 {
+      font-size: 1.75rem;
+      font-weight: bold;
+      color: var(--heading);
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      font-size: 1.125rem;
+      color: var(--body);
+      margin-bottom: 1.5rem;
+    }
+
+    > div {
+      display: flex;
+
+      span {
+        display: flex;
+        align-items: center;
+
+        color: var(--info);
+        font-size: 0.875rem;
+        text-transform: capitalize;
+
+        svg {
+          margin-right: 0.5rem;
+        }
+
+        &:last-child {
+          margin-left: 1.5rem;
+        }
+      }
+    }
+
+    & + a {
+      margin-top: 3rem;
+    }
+  }
 }
+
+

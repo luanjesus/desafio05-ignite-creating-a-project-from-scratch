@@ -1,3 +1,4 @@
+/* eslint-disable react/button-has-type */
 import Head from 'next/head';
 import { Header } from '../components/Header';
 import { FiCalendar, FiUser } from 'react-icons/fi';
@@ -39,16 +40,33 @@ export default function Home() {
       <div className={styles.container}>
         <Header />
         <main className={commonStyles.content}>
-          <section>
+          <section className={styles.posts}>
             <a>
               <h2>lorem ipsum dolor lorem ips</h2>
               <p>lorem ipsum dolor sit amet lorem</p>
-              <span>
-                <FiCalendar color="#BBBBBB" fontSize="20px" /> 31 Mar 2021
-                <FiUser color="#BBBBBB" fontSize="20px" /> Luan Leone
-              </span>
+              <div>
+                <span>
+                  <FiCalendar color="#BBBBBB" fontSize="0.938rem" /> 31 Mar 2021
+                </span>
+                <span>
+                  <FiUser color="#BBBBBB" fontSize="0.938rem" /> Luan jesus
+                </span>
+              </div>
+            </a>
+            <a>
+              <h2>lorem ipsum dolor lorem ips</h2>
+              <p>lorem ipsum dolor sit amet lorem</p>
+              <div>
+                <span>
+                  <FiCalendar color="#BBBBBB" fontSize="0.938rem" /> 31 Mar 2021
+                </span>
+                <span>
+                  <FiUser color="#BBBBBB" fontSize="0.938rem" /> Luan Leone
+                </span>
+              </div>
             </a>
           </section>
+          <button>Carregar mais posts</button>
         </main>
       </div>
     </>
