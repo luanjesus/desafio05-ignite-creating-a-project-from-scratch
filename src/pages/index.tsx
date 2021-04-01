@@ -1,9 +1,17 @@
 /* eslint-disable react/button-has-type */
 import Head from 'next/head';
-import { Header } from '../components/Header';
 import { FiCalendar, FiUser } from 'react-icons/fi';
+import { format } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
+
+import { RichText } from 'prismic-dom';
+import Link from 'next/link';
 
 import { GetStaticProps } from 'next';
+import Prismic from '@prismicio/client';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { Header } from '../components/Header';
 
 import { getPrismicClient } from '../services/prismic';
 
@@ -31,7 +39,15 @@ interface HomeProps {
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export default function Home() {
+export default function Home({ postsPagination, preview }: HomeProps) {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [nextPage, setNextPage] = useState('');
+
+  useEffect(() => {
+    setPosts(postsPagination.results);
+    setNextPage(postsPagination.next_page);
+  }, [postsPagination.results, postsPagination.next_page]);
+
   return (
     <>
       <Head>
@@ -41,30 +57,30 @@ export default function Home() {
         <Header />
         <main className={commonStyles.content}>
           <section className={styles.posts}>
-            <a>
-              <h2>lorem ipsum dolor lorem ips</h2>
-              <p>lorem ipsum dolor sit amet lorem</p>
-              <div>
-                <span>
-                  <FiCalendar color="#BBBBBB" fontSize="0.938rem" /> 31 Mar 2021
-                </span>
-                <span>
-                  <FiUser color="#BBBBBB" fontSize="0.938rem" /> Luan jesus
-                </span>
-              </div>
-            </a>
-            <a>
-              <h2>lorem ipsum dolor lorem ips</h2>
-              <p>lorem ipsum dolor sit amet lorem</p>
-              <div>
-                <span>
-                  <FiCalendar color="#BBBBBB" fontSize="0.938rem" /> 31 Mar 2021
-                </span>
-                <span>
-                  <FiUser color="#BBBBBB" fontSize="0.938rem" /> Luan Leone
-                </span>
-              </div>
-            </a>
+            {posts.map(post => (
+              <Link href="/">
+                <a>
+                  <h2>{post.data.title}</h2>
+                  <p>{post.data.subtitle}</p>
+                  <div>
+                    <span>
+                      <FiCalendar color="#BBBBBB" fontSize="0.938rem" />{' '}
+                      {format(
+                        new Date(post.first_publication_date),
+                        'dd MMM yyyy',
+                        {
+                          locale: ptBR,
+                        }
+                      )}
+                    </span>
+                    <span>
+                      <FiUser color="#BBBBBB" fontSize="0.938rem" />
+                      {post.data.author}
+                    </span>
+                  </div>
+                </a>
+              </Link>
+            ))}
           </section>
           <button>Carregar mais posts</button>
         </main>
@@ -73,9 +89,41 @@ export default function Home() {
   );
 }
 
-// export const getStaticProps = async () => {
-//   // const prismic = getPrismicClient();
-//   // const postsResponse = await prismic.query(TODO);
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const getStaticProps: GetStaticProps<HomeProps> = async ({
+  preview = false,
+  previewData,
+}) => {
+  const prismic = getPrismicClient();
 
-//   // TODO
-// };
+  const postsResponse = await prismic.query(
+    [Prismic.predicates.at('document.type', 'posts')],
+    {
+      fetch: ['posts.title', 'posts.subtitle', 'posts.author'],
+      pageSize: 3,
+      ref: previewData?.ref ?? null,
+    }
+  );
+
+  const posts = postsResponse.results.map(post => {
+    return {
+      uid: post.uid,
+      first_publication_date: post.first_publication_date,
+      data: {
+        title: post.data.title,
+        subtitle: post.data.subtitle,
+        author: post.data.author,
+      },
+    };
+  });
+
+  return {
+    props: {
+      postsPagination: {
+        next_page: postsResponse.next_page,
+        results: posts,
+      },
+      preview,
+    },
+  };
+};
